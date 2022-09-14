@@ -3,7 +3,7 @@ import express from 'express'
 import multer from 'multer'
 import AWS from 'aws-sdk'
 import cors from 'cors'
-dotenv.config({path: 'key.env'})
+dotenv.config({path: '../key.env'})
 const app = express()
 const port = 3000
 dotenv.config()
