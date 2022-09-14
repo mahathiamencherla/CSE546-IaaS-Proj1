@@ -50,7 +50,7 @@ app.post('/api/image',upload,(req, res) => {
     const message = {
         DelaySeconds: 10,
         MessageBody: req.file.originalname,
-        QueueUrl: "https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue" //SQS_QUEUE_URL; e.g., 'https://sqs.REGION.amazonaws.com/ACCOUNT-ID/QUEUE-NAME'
+        QueueUrl: "https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue"
     };
     SQS.sendMessage(message, (err,result) => {
         if (err) {
@@ -61,6 +61,6 @@ app.post('/api/image',upload,(req, res) => {
     })
 })
 
-app.listen(3000, () => {
-    console.log(`Server running on 3000`)
+app.listen(3001, () => {
+    console.log(`Server running on 3001`)
 })

@@ -1,4 +1,5 @@
 import boto3
+import image_classification
 
 import os
 from dotenv import load_dotenv
@@ -11,6 +12,9 @@ import json
 
 # Create SQS client
 sqs = boto3.client("sqs", region_name="us-east-1",
+        aws_access_key_id=os.environ.get('AWS_KEY'),
+                       aws_secret_access_key=os.environ.get('AWS_SECRET'))
+s3 = boto3.client("s3", region_name="us-east-1",
         aws_access_key_id=os.environ.get('AWS_KEY'),
                        aws_secret_access_key=os.environ.get('AWS_SECRET'))
 
@@ -34,7 +38,6 @@ def read_queue():
     if "Messages" not in response:
         print('No messages')
         return
-    print(response['Messages'][0])
     message = response['Messages'][0]
     receipt_handle = message['ReceiptHandle']
 
@@ -45,7 +48,24 @@ def read_queue():
     )
     return message['Body']
 
+def process_image(imageName):
+    s3.download_file('iaas-proj-input', imageName, 'downloads/'+imageName)
+    classification = image_classification.classify('downloads/'+imageName)
+    data = {
+        imageName.split('.')[0]: classification
+    }
+
+    s3.put_object(
+        Bucket = 'iaas-proj-output',
+        Key = imageName.split('.')[0],
+        Body = str({
+            imageName.split('.')[0]: classification
+        })
+    )
+
 if __name__ == "__main__":
     while True:
-        print(read_queue())
+        imageName = read_queue()
+        if imageName:
+            process_image(imageName)
 

@@ -1,2 +1,4 @@
 .idea
 key.env
+__pycache__
+app-tier/downloads
