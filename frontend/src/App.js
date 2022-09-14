@@ -26,7 +26,7 @@ class App extends Component {
     console.log(this.state);
     let form_data = new FormData();
     form_data.append('image', this.state.image, this.state.image.name);
-    let url = 'http://localhost:3000/api/posts/';
+    let url = 'http://localhost:3000/api/image/';
     axios.post(url, form_data, {
       headers: {
         'content-type': 'multipart/form-data'
