@@ -6,6 +6,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import fileupload from "express-fileupload"
 import { v4 as uuidv4 } from 'uuid';
+import { Consumer } from 'sqs-consumer';
 
 dotenv.config({path: '../key.env'})
 const app = express()
@@ -44,7 +45,7 @@ AWS.config.update({region: 'us-east-1'})
 const SQS = new AWS.SQS({apiVersion: '2012-11-05',accessKeyId: process.env.AWS_KEY,
     secretAccessKey: process.env.AWS_SECRET})
 
-var params = {
+var SQSparams = {
     QueueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
     AttributeNames: [
         "SentTimestamp"
@@ -56,6 +57,25 @@ var params = {
     VisibilityTimeout: 20,
     WaitTimeSeconds: 10
     };
+    
+const sqsApp = Consumer.create({
+    queueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
+    handleMessage: async (data) => {
+        var message = JSON.parse(data.Body)
+        map.set(message.id, message.classification)
+    },
+    sqs: SQS,
+    AttributeNames: [
+        "SentTimestamp"
+    ],
+    MaxNumberOfMessages: 1,
+    MessageAttributeNames: [
+        "All"
+    ],
+    VisibilityTimeout: 20,
+    WaitTimeSeconds: 10
+    });
+sqsApp.start();
 
 app.post('/api/image',(req, res) => {
     const params = {
@@ -75,7 +95,7 @@ app.post('/api/image',(req, res) => {
     
     console.log(JSON.stringify(new Message(id, req.files.myfile.name)))
     const message = {
-        DelaySeconds: 10,
+        DelaySeconds: 0,
         MessageBody: JSON.stringify(new Message(id, req.files.myfile.name)),
         QueueUrl: "https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue"
     };
@@ -85,43 +105,63 @@ app.post('/api/image',(req, res) => {
             return
         }
     })
+    map.set(id,"")
     console.log('Sent message for ' + req.files.myfile.name)
+    waitUntilKeyPresent(id)
+    res.send(map.get(id))
+    // console.log(map.get(id))
+    
 
-    var result = ""
-    while (true) {
-        console.log('in while')
-        result = ReceiveMessage(id)
-        console.log(result)
-    }
+
+    // var result = ReceiveMessage(id)
+    // console.log(result)
+    // var result = ""
+    // while (true) {
+    //     console.log('in while')
+    //     result = ReceiveMessage(id)
+    //     console.log(result)
+    // }
     
 })
 
-function ReceiveMessage(id) {
-    SQS.receiveMessage(params, function(err, data) {
-        console.log('Searching for message')
-        if (err) {
-          console.log("Receive Error", err);
-        } else if (data.Messages) {
-            var message = JSON.parse(data.Messages[0].Body)
-            console.log(message.image)
-            if (message.id == id) {
-                var deleteParams = {
-                    QueueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
-                    ReceiptHandle: data.Messages[0].ReceiptHandle
-                };
-                SQS.deleteMessage(deleteParams, function(err, data) {
-                    if (err) {
-                        console.log("Delete Error", err);
-                    } else {
-                        console.log("Message Deleted", data);
-                    }
-                });
-                console.log('Received classification for ' + message.image)
-                return message.classification
-            }
-        }
-      });
-}
+function waitUntilKeyPresent(key) {
+    if (map.get(key) == "") {
+        console.log('key not present')
+        setTimeout(waitUntilKeyPresent, 10000, key);
+    } else {
+        console.log('key present: ' + key)
+        console.log(map.get(key))
+        return
+    }
+} 
+
+// function ReceiveMessage(id) {
+//     SQS.receiveMessage(SQSparams, function(err, data) {
+//         console.log('Searching for message')
+//         console.log(data)
+//         if (err) {
+//           console.log("Receive Error", err);
+//         } else if (data.Messages) {
+//             var message = JSON.parse(data.Messages[0].Body)
+//             console.log(message.image)
+//             if (message.id == id) {
+//                 var deleteParams = {
+//                     QueueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
+//                     ReceiptHandle: data.Messages[0].ReceiptHandle
+//                 };
+//                 SQS.deleteMessage(deleteParams, function(err, data) {
+//                     if (err) {
+//                         console.log("Delete Error", err);
+//                     } else {
+//                         console.log("Message Deleted", data);
+//                     }
+//                 });
+//                 console.log('Received classification for ' + message.image)
+//                 return message.classification
+//             }
+//         }
+//     });
+// }
 
 app.listen(3001, () => {
     console.log(`Server running on 3001`)
