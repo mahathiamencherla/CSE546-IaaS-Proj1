@@ -1,6 +1,7 @@
+from email.mime import image
 import boto3
 import image_classification
-
+import json
 import os
 from dotenv import load_dotenv
 
@@ -33,7 +34,7 @@ def read_queue():
         MessageAttributeNames=[
             'All'
         ],
-        VisibilityTimeout=30,
+        VisibilityTimeout=20,
         WaitTimeSeconds=10
     )
     if "Messages" not in response:
@@ -47,31 +48,36 @@ def read_queue():
         QueueUrl=request_queue_url,
         ReceiptHandle=receipt_handle
     )
-    return message['Body']
+    return json.loads(message['Body'])
 
-def process_image(imageName):
-    s3.download_file('iaas-proj-input', imageName, 'downloads/'+imageName)
-    classification = image_classification.classify('downloads/'+imageName)
+class Message():
+    def __init__(self, id, image, classification):
+        self.id = id
+        self.image = image
+        self.classification = classification
+
+def process_image(message):
+    s3.download_file('iaas-proj-input', message['name'], 'downloads/'+message['name'])
+    classification = image_classification.classify('downloads/'+message['name'])
 
     s3.put_object(
         Bucket = 'iaas-proj-output',
-        Key = imageName.split('.')[0],
+        Key = message['name'].split('.')[0],
         Body = str({
-            imageName.split('.')[0]: classification
+            message['name'].split('.')[0]: classification
         })
     )
+
+    message = Message(message['id'], message['name'], classification)
     sqs.send_message(
         QueueUrl='https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
-        MessageBody=str({
-            'image': imageName,
-            'classification': classification
-        })
+        MessageBody=str(json.dumps(message.__dict__))
     )
-    print(imageName + " processed. Classification - " + classification)
+    print(message.image + " processed. Classification - " + classification)
 
 if __name__ == "__main__":
     while True:
-        imageName = read_queue()
-        if imageName:
-            process_image(imageName)
+        message = read_queue()
+        if message:
+            process_image(message)
 
