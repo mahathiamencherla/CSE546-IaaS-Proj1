@@ -61,7 +61,7 @@ app.post('/api/image',(req, res) => {
             return
         }
     })
-    console.log('Sent message for ' + req.files.myfile.name)
+    console.log('Sent message for ' +)
 })
 
 app.listen(3001, () => {
