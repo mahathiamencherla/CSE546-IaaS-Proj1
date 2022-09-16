@@ -18,13 +18,14 @@ s3 = boto3.client("s3", region_name="us-east-1",
         aws_access_key_id=os.environ.get('AWS_KEY'),
                        aws_secret_access_key=os.environ.get('AWS_SECRET'))
 
-queue_url = 'https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue'
+request_queue_url = 'https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue'
+response_queue_url = 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue'
 
 def read_queue():
 
     # Receive message from SQS queue
     response = sqs.receive_message(
-        QueueUrl=queue_url,
+        QueueUrl=request_queue_url,
         AttributeNames=[
             'SentTimestamp'
         ],
@@ -32,7 +33,7 @@ def read_queue():
         MessageAttributeNames=[
             'All'
         ],
-        VisibilityTimeout=0,
+        VisibilityTimeout=30,
         WaitTimeSeconds=10
     )
     if "Messages" not in response:
@@ -43,7 +44,7 @@ def read_queue():
 
     # Delete received message from queue
     sqs.delete_message(
-        QueueUrl=queue_url,
+        QueueUrl=request_queue_url,
         ReceiptHandle=receipt_handle
     )
     return message['Body']
@@ -51,9 +52,6 @@ def read_queue():
 def process_image(imageName):
     s3.download_file('iaas-proj-input', imageName, 'downloads/'+imageName)
     classification = image_classification.classify('downloads/'+imageName)
-    data = {
-        imageName.split('.')[0]: classification
-    }
 
     s3.put_object(
         Bucket = 'iaas-proj-output',
@@ -62,6 +60,14 @@ def process_image(imageName):
             imageName.split('.')[0]: classification
         })
     )
+    sqs.send_message(
+        QueueUrl='https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
+        MessageBody=str({
+            'image': imageName,
+            'classification': classification
+        })
+    )
+    print(imageName + " processed. Classification - " + classification)
 
 if __name__ == "__main__":
     while True:
