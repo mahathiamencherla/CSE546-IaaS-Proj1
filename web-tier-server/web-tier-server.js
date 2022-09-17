@@ -105,13 +105,13 @@ app.post('/api/image',(req, res) => {
             return
         }
     })
+
+    // TODO: Response part
     map.set(id,"")
     console.log('Sent message for ' + req.files.myfile.name)
     waitUntilKeyPresent(id)
     res.send(map.get(id))
     // console.log(map.get(id))
-    
-
 
     // var result = ReceiveMessage(id)
     // console.log(result)
