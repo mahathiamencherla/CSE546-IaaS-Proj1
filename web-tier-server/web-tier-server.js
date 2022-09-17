@@ -77,7 +77,7 @@ const sqsApp = Consumer.create({
     });
 sqsApp.start();
 
-app.post('/api/image',(req, res) => {
+app.post('/api/image', async(req, res) => {
     const params = {
         Bucket: "iaas-proj-input",
         Key: req.files.myfile.name,
@@ -109,7 +109,9 @@ app.post('/api/image',(req, res) => {
     // TODO: Response part
     map.set(id,"")
     console.log('Sent message for ' + req.files.myfile.name)
-    waitUntilKeyPresent(id)
+    
+    await waitUntilKeyPresent(id)
+    console.log("after await");
     res.send(map.get(id))
     // console.log(map.get(id))
 
