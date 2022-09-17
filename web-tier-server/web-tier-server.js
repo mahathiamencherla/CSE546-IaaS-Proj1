@@ -126,15 +126,24 @@ app.post('/api/image', async(req, res) => {
     
 })
 
-function waitUntilKeyPresent(key) {
-    if (map.get(key) == "") {
+const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function waitUntilKeyPresent (key) {
+    while (map.get(key) == "") {
         console.log('key not present')
-        setTimeout(waitUntilKeyPresent, 10000, key);
-    } else {
-        console.log('key present: ' + key)
-        console.log(map.get(key))
-        return
+        await snooze(1000);
     }
+    console.log('key present: ' + map.get(key))
+    // if (map.get(key) == "") {
+    //     console.log('key not present')
+    //     await setTimeout(waitUntilKeyPresent, 10000, key);
+    // } else {
+    //     console.log('key present: ' + key)
+    //     console.log(map.get(key))
+    //     return
+    // }
+    // every 10 seconds check if key in map
+
 }
 
 // function ReceiveMessage(id) {
