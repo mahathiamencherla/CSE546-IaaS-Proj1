@@ -133,7 +133,7 @@ function waitUntilKeyPresent(key) {
         console.log(map.get(key))
         return
     }
-} 
+}
 
 // function ReceiveMessage(id) {
 //     SQS.receiveMessage(SQSparams, function(err, data) {
