@@ -18,6 +18,12 @@ sqs = boto3.client("sqs", region_name="us-east-1",
 s3 = boto3.client("s3", region_name="us-east-1",
         aws_access_key_id=os.environ.get('AWS_KEY'),
                        aws_secret_access_key=os.environ.get('AWS_SECRET'))
+asg_client = boto3.client('autoscaling', region_name="us-east-1",
+        aws_access_key_id=os.environ.get('AWS_KEY'),
+                       aws_secret_access_key=os.environ.get('AWS_SECRET'))
+cw_client = boto3.client('cloudwatch', region_name="us-east-1",
+        aws_access_key_id=os.environ.get('AWS_KEY'),
+                       aws_secret_access_key=os.environ.get('AWS_SECRET'))
 
 request_queue_url = 'https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue'
 response_queue_url = 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue'
