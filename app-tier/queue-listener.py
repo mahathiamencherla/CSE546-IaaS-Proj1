@@ -76,6 +76,9 @@ def process_image(message):
     print(message.image + " processed. Classification - " + classification)
 
 if __name__ == "__main__":
+    if not os.path.exists("downloads"):
+        os.makedirs("downloads")
+
     while True:
         message = read_queue()
         if message:
