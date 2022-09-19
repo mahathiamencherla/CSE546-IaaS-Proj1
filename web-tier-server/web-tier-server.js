@@ -110,7 +110,7 @@ app.post('/api/image', async(req, res) => {
     map.set(id,"")
     console.log('Sent message for ' + req.files.myfile.name)
     
-    await waitUntilKeyPresent(id)
+    await waitUntilKeyPresent(id, 0)
     console.log("after await");
     res.send(map.get(id))
     // console.log(map.get(id))
@@ -128,8 +128,9 @@ app.post('/api/image', async(req, res) => {
 
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-async function waitUntilKeyPresent (key) {
-    while (map.get(key) == "") {
+async function waitUntilKeyPresent (key, retryCount) {
+    while (map.get(key) == "" && retryCount < 30) {
+        retryCount++;
         console.log('key not present')
         await snooze(1000);
     }
