@@ -61,6 +61,7 @@ var SQSparams = {
 const sqsApp = Consumer.create({
     queueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
     handleMessage: async (data) => {
+        console.log("Message received")
         var message = JSON.parse(data.Body)
         map.set(message.id, message.classification)
     },
