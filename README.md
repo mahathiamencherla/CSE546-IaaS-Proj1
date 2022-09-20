@@ -19,20 +19,36 @@ TODO - Add pem key and AWS creds and specify location here
   - URL - TODO
   - EIP - TODO
 
-3 terminals
+## Run locally
 
-1st terminal
-navigate to web-tier folder 
-run node web-tier-server.js
+1. Create a key.env file to store the AWS access keys
+```bash
+AWS_KEY=EXAMPLE
+AWS_SECRET=EXAMPLE
+``` 
+2. Navigate to web-tier-server folder
+```bash
+$ cd web-tier-server
+```
+3. Run this command to download all dependencies
+```bash
+$ npm install
+```
+4. Run the code
+```bash
+$ node web-tier-server.js
+```
+5. Start a new terminal and navigate to app-tier folder
+```bash
+$ cd app-tier
+$ python3 queue-listener.py
+```
 
-2nd terminal
-navigate to app-tier folder
-run python3 queue-listener.py
-
-3rd terminal
-navigate to workload generator folder
-run python3 workload_generator.py \
+6. Start a new terminal and navigate to workload-generator folder, run the code
+```bash
+$ cd CSE546_Sum22_workload_generator/
+$ python3 python3 workload_generator.py \
  --num_request 1 \                                    // number of images to be sent
  --url 'http://localhost:3001/api/image' \            // change ip to instance
  --image_folder "imagenet-100/"   
-
+```
