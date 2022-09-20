@@ -30,8 +30,6 @@ var Message = function(id, name) {
     this.name = name;
 }
 
-AWS.config.update({region: 'us-east-1'})
-
 const SQS = new AWS.SQS({apiVersion: '2012-11-05',accessKeyId: process.env.AWS_KEY,
     secretAccessKey: process.env.AWS_SECRET})
     

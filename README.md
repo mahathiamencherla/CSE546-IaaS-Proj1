@@ -47,7 +47,7 @@ $ python3 queue-listener.py
 6. Start a new terminal and navigate to workload-generator folder, run the code
 ```bash
 $ cd CSE546_Sum22_workload_generator/
-$ python3 python3 workload_generator.py \
+$ python3 workload_generator.py \
  --num_request 1 \                                    // number of images to be sent
  --url 'http://localhost:3001/api/image' \            // change ip to instance
  --image_folder "imagenet-100/"   
