@@ -1,0 +1,15 @@
+{
+    "TargetValue":50,
+    "CustomizedMetricSpecification":{
+      "MetricName":"BacklogPerInstance",
+      "Namespace":"SQSCustomMetric",
+      "Dimensions":[
+      {
+        "Name":"AutoScaleGroup",
+        "Value":"app-tier"
+      }
+      ],
+      "Statistic":"Average",
+      "Unit":"None"
+    }
+  }

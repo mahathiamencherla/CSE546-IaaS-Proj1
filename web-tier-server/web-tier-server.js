@@ -49,6 +49,7 @@ const SQS = new AWS.SQS({apiVersion: '2012-11-05',accessKeyId: process.env.AWS_K
 const sqsApp = Consumer.create({
     queueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
     handleMessage: async (data) => {
+        console.log("Message received")
         var message = JSON.parse(data.Body)
         map.set(message.id, message.classification)
     },
@@ -105,7 +106,7 @@ app.post('/api/image', async(req, res) => {
 
     console.log('Sent message for ' + inputBucketKey);
     
-    await waitUntilKeyPresent(id)
+    await waitUntilKeyPresent(id, 0)
 
     //sending result 
     res.send(map.get(id))
@@ -113,8 +114,9 @@ app.post('/api/image', async(req, res) => {
 
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-const waitUntilKeyPresent = async(key) => {
-    while (map.get(key) == "") {
+const waitUntilKeyPresent = async(key, retryCount) => {
+    while (map.get(key) == "" && retryCount < 30) {
+        retryCount++;
         console.log('key not present')
         await snooze(1000);
     }
