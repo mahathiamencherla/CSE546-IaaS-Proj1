@@ -1,9 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import multer from 'multer';
 import AWS from 'aws-sdk';
 import cors from 'cors';
-// import bodyParser from 'body-parser'
 import fileupload from "express-fileupload";
 import { v4 as uuidv4 } from 'uuid';
 import { Consumer } from 'sqs-consumer';
@@ -27,19 +25,10 @@ const s3 = new AWS.S3({
     secretAccessKey: process.env.AWS_SECRET
 })
 
-const storage = multer.memoryStorage({
-    destination: function(req, file, callback) {
-        callback(null, '')
-    }
-})
-
-var Message = function (id, name) {
+var Message = function(id, name) {
     this.id = id;
     this.name = name;
 }
-
-// const upload = multer({storage}).single('image')
-var upload = multer({ dest: 'uploads/' })
 
 AWS.config.update({region: 'us-east-1'})
 
