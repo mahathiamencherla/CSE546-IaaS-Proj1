@@ -115,7 +115,7 @@ app.post('/api/image', async(req, res) => {
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const waitUntilKeyPresent = async(key, retryCount) => {
-    while (map.get(key) == "" && retryCount < 30) {
+    while (map.get(key) == "" && retryCount < 420) {
         retryCount++;
         console.log('key not present')
         await snooze(1000);

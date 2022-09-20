@@ -46,8 +46,8 @@ def read_queue():
     if "Messages" not in response:
         print('No messages')
         return
-    print(message)
     message = response['Messages'][0]
+    print("message: " + str(message))
     receipt_handle = message['ReceiptHandle']
 
     # Delete received message from queue
