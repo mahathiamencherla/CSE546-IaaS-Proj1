@@ -1,22 +1,23 @@
-import dotenv from 'dotenv'
-import express from 'express'
-import multer from 'multer'
-import AWS from 'aws-sdk'
-import cors from 'cors'
-import bodyParser from 'body-parser'
-import fileupload from "express-fileupload"
+import dotenv from 'dotenv';
+import express from 'express';
+import multer from 'multer';
+import AWS from 'aws-sdk';
+import cors from 'cors';
+// import bodyParser from 'body-parser'
+import fileupload from "express-fileupload";
 import { v4 as uuidv4 } from 'uuid';
 import { Consumer } from 'sqs-consumer';
 
 dotenv.config({path: '../key.env'})
 const app = express()
-dotenv.config()
+// dotenv.config()
 
 app.use(cors({
     origin: '*'
 }));
 app.use(fileupload());
 
+// map [uniqueID, classification_result]
 const map = new Map();
 
 AWS.config.update({region: 'us-east-1'});
@@ -32,7 +33,7 @@ const storage = multer.memoryStorage({
     }
 })
 
-var Message = function(id, name) {
+var Message = function (id, name) {
     this.id = id;
     this.name = name;
 }
@@ -44,19 +45,6 @@ AWS.config.update({region: 'us-east-1'})
 
 const SQS = new AWS.SQS({apiVersion: '2012-11-05',accessKeyId: process.env.AWS_KEY,
     secretAccessKey: process.env.AWS_SECRET})
-
-var SQSparams = {
-    QueueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
-    AttributeNames: [
-        "SentTimestamp"
-    ],
-    MaxNumberOfMessages: 1,
-    MessageAttributeNames: [
-        "All"
-    ],
-    VisibilityTimeout: 20,
-    WaitTimeSeconds: 10
-    };
     
 const sqsApp = Consumer.create({
     queueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
@@ -79,27 +67,33 @@ const sqsApp = Consumer.create({
 sqsApp.start();
 
 app.post('/api/image', async(req, res) => {
+    // unique ID for the image
+    var id = uuidv4();
+    console.log("in post req")
+    //upload image to S3
+    let inputBucketKey = Date.now().toString() + req.files.myfile.name;
+    console.log("input: ", inputBucketKey);
     const params = {
         Bucket: "iaas-proj-input",
-        Key: req.files.myfile.name,
+        Key: inputBucketKey,
         Body: req.files.myfile.data
     }
 
     s3.upload(params, (error, data) => {
-        // if(error){
-        //     res.status(500).send(error)
-        // }
-        // res.status(200).send(data)
+        if(error){
+            console.log("Error in uploading image to S3: ", error);
+        } else {
+            console.log("Image Uploaded to S3!");
+        }
     })
-
-    var id = uuidv4();
     
-    console.log(JSON.stringify(new Message(id, req.files.myfile.name)))
+    // sending request to SQS
     const message = {
         DelaySeconds: 0,
-        MessageBody: JSON.stringify(new Message(id, req.files.myfile.name)),
+        MessageBody: JSON.stringify(new Message(id, inputBucketKey)),
         QueueUrl: "https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue"
     };
+
     SQS.sendMessage(message, (err,result) => {
         if (err) {
             console.log(err)
@@ -107,74 +101,27 @@ app.post('/api/image', async(req, res) => {
         }
     })
 
-    // TODO: Response part
-    map.set(id,"")
-    console.log('Sent message for ' + req.files.myfile.name)
+    
+    map.set(id,"");
+
+    console.log('Sent message for ' + inputBucketKey);
     
     await waitUntilKeyPresent(id, 0)
-    console.log("after await");
-    res.send(map.get(id))
-    // console.log(map.get(id))
 
-    // var result = ReceiveMessage(id)
-    // console.log(result)
-    // var result = ""
-    // while (true) {
-    //     console.log('in while')
-    //     result = ReceiveMessage(id)
-    //     console.log(result)
-    // }
-    
+    //sending result 
+    res.send(map.get(id))
 })
 
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-async function waitUntilKeyPresent (key, retryCount) {
+const waitUntilKeyPresent = async(key, retryCount) => {
     while (map.get(key) == "" && retryCount < 30) {
         retryCount++;
         console.log('key not present')
         await snooze(1000);
     }
     console.log('key present: ' + map.get(key))
-    // if (map.get(key) == "") {
-    //     console.log('key not present')
-    //     await setTimeout(waitUntilKeyPresent, 10000, key);
-    // } else {
-    //     console.log('key present: ' + key)
-    //     console.log(map.get(key))
-    //     return
-    // }
-    // every 10 seconds check if key in map
-
 }
-
-// function ReceiveMessage(id) {
-//     SQS.receiveMessage(SQSparams, function(err, data) {
-//         console.log('Searching for message')
-//         console.log(data)
-//         if (err) {
-//           console.log("Receive Error", err);
-//         } else if (data.Messages) {
-//             var message = JSON.parse(data.Messages[0].Body)
-//             console.log(message.image)
-//             if (message.id == id) {
-//                 var deleteParams = {
-//                     QueueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
-//                     ReceiptHandle: data.Messages[0].ReceiptHandle
-//                 };
-//                 SQS.deleteMessage(deleteParams, function(err, data) {
-//                     if (err) {
-//                         console.log("Delete Error", err);
-//                     } else {
-//                         console.log("Message Deleted", data);
-//                     }
-//                 });
-//                 console.log('Received classification for ' + message.image)
-//                 return message.classification
-//             }
-//         }
-//     });
-// }
 
 app.listen(3001, () => {
     console.log(`Server running on 3001`)

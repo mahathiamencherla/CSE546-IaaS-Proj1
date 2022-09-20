@@ -63,6 +63,7 @@ class Message():
         self.classification = classification
 
 def process_image(message):
+    print(message)
     s3.download_file('iaas-proj-input', message['name'], 'downloads/'+message['name'])
     classification = image_classification.classify('downloads/'+message['name'])
 
