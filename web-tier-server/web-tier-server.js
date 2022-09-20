@@ -50,7 +50,7 @@ const sqsApp = Consumer.create({
     queueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
     handleMessage: async (data) => {
         var message = JSON.parse(data.Body)
-        console.log("Message received: " + message)
+        console.log("Message received: " + message.id)
         map.set(message.id, message.classification)
     },
     sqs: SQS,
@@ -101,7 +101,7 @@ app.post('/api/image', async(req, res) => {
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const waitUntilKeyPresent = async(key, retryCount) => {
-    while (map.get(key) == "" && retryCount < 120) {
+    while (map.get(key) == "" && retryCount < 420) {
         retryCount++;
         await snooze(1000);
     }
