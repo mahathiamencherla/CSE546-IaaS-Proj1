@@ -49,8 +49,8 @@ const SQS = new AWS.SQS({apiVersion: '2012-11-05',accessKeyId: process.env.AWS_K
 const sqsApp = Consumer.create({
     queueUrl: 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
     handleMessage: async (data) => {
-        console.log("Message received")
         var message = JSON.parse(data.Body)
+        console.log("Message received: " + message)
         map.set(message.id, message.classification)
     },
     sqs: SQS,
@@ -69,23 +69,16 @@ sqsApp.start();
 app.post('/api/image', async(req, res) => {
     // unique ID for the image
     var id = uuidv4();
-    console.log("in post req")
     //upload image to S3
     let inputBucketKey = Date.now().toString() + req.files.myfile.name;
-    console.log("input: ", inputBucketKey);
     const params = {
         Bucket: "iaas-proj-input",
         Key: inputBucketKey,
         Body: req.files.myfile.data
     }
 
-    s3.upload(params, (error, data) => {
-        if(error){
-            console.log("Error in uploading image to S3: ", error);
-        } else {
-            console.log("Image Uploaded to S3!");
-        }
-    })
+    await s3.upload(params).promise()
+    console.log("Image Uploaded to S3! for " + inputBucketKey);
     
     // sending request to SQS
     const message = {
@@ -94,17 +87,10 @@ app.post('/api/image', async(req, res) => {
         QueueUrl: "https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue"
     };
 
-    SQS.sendMessage(message, (err,result) => {
-        if (err) {
-            console.log(err)
-            return
-        }
-    })
-
+    await SQS.sendMessage(message).promise()
+    console.log("Message sent to SQS for " + inputBucketKey);
     
     map.set(id,"");
-
-    console.log('Sent message for ' + inputBucketKey);
     
     await waitUntilKeyPresent(id, 0)
 
@@ -115,12 +101,11 @@ app.post('/api/image', async(req, res) => {
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const waitUntilKeyPresent = async(key, retryCount) => {
-    while (map.get(key) == "" && retryCount < 420) {
+    while (map.get(key) == "" && retryCount < 120) {
         retryCount++;
-        console.log('key not present')
         await snooze(1000);
     }
-    console.log('key present: ' + map.get(key))
+    console.log('key present: ' + key)
 }
 
 app.listen(3001, () => {
