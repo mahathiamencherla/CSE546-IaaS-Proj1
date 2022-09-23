@@ -32,7 +32,9 @@ noOfRunningEc2 = len(runningEc2Ids)
 print("running = " + str(noOfRunningEc2))
 
 user_data = '''#!/bin/bash
-pm2 resurrect'''
+sudo -u ubuntu -i <<'EOF'
+pm2 resurrect
+EOF'''
 
 # Autoscaling
 if noOfRunningEc2 == requiredEc2:
