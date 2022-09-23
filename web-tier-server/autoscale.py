@@ -12,7 +12,8 @@ ec2 = boto3.client('ec2', region_name="us-east-1",
         aws_access_key_id=os.environ.get('AWS_KEY'),
                        aws_secret_access_key=os.environ.get('AWS_SECRET'))
 # Get the queue URL
-requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue'
+# old queue: requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue'
+requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/983873151114/RequestQueue'
 # Fetch the ApproximateNumberOfMessages from the queue
 requestQueue_attributes = responseQueue.get_queue_attributes(QueueUrl=requestQueue_url, AttributeNames=['ApproximateNumberOfMessages'])
 noOfMessages = int(requestQueue_attributes['Attributes']['ApproximateNumberOfMessages'])

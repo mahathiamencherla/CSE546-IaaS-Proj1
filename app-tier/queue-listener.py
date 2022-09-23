@@ -24,8 +24,8 @@ cw_client = boto3.client('cloudwatch', region_name="us-east-1",
         aws_access_key_id=os.environ.get('AWS_KEY'),
                        aws_secret_access_key=os.environ.get('AWS_SECRET'))
 
-request_queue_url = 'https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue'
-response_queue_url = 'https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue'
+request_queue_url = 'https://sqs.us-east-1.amazonaws.com/983873151114/RequestQueue'
+response_queue_url = 'https://sqs.us-east-1.amazonaws.com/983873151114/ResponseQueue'
 
 def read_queue():
 
@@ -77,7 +77,7 @@ def process_image(message):
 
     message = Message(message['id'], message['name'], classification)
     sqs.send_message(
-        QueueUrl='https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue',
+        QueueUrl='https://sqs.us-east-1.amazonaws.com/983873151114/ResponseQueue',
         MessageBody=str(json.dumps(message.__dict__))
     )
     print(message.image + " processed. Classification - " + classification)

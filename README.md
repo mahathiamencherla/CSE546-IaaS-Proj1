@@ -14,7 +14,7 @@ TODO - Add pem key and AWS creds and specify location here
   - Output - iaas-proj-output
 - SQS Queues
   - RequestQueue - https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue
-  - ResponseQueue - https://sqs.us-east-1.amazonaws.com/676148463056/ResponseQueue
+  - ResponseQueue - https://sqs.us-east-1.amazonaws.com/983873151114/ResponseQueue
 - Web Tier
   - URL - TODO
   - EIP - TODO
