@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 load_dotenv('../key.env')
 
-import logging
 from botocore.exceptions import ClientError
 import json
 
