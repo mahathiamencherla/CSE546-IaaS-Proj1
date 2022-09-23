@@ -28,26 +28,28 @@ print(noOfMessages,runningEc2Ids)
 # Total number of instance required for the messages in the queue
 target = 50
 requiredEc2 = math.ceil(noOfMessages/target)
+print("required = " + str(requiredEc2))
 noOfRunningEc2 = len(runningEc2Ids)
+print("running = " + str(noOfRunningEc2))
 # Autoscaling
 if noOfRunningEc2 == requiredEc2:
         print("Autoscaling not required!")
 # Scaling-in
-if noOfRunningEc2>requiredEc2:
+elif noOfRunningEc2>requiredEc2:
         remove = noOfRunningEc2 - requiredEc2
         print(ec2.terminate_instances(InstanceIds=runningEc2Ids[:remove]))
 # Scaling-out
 else:
         add = requiredEc2 - noOfRunningEc2
-        response=ec2.create_instances(ImageId='ami-0bb1040fdb5a076bc',InstanceType='t2.micro',KeyName='test',MinCount=add,TagSpecifications=[{
+        response=ec2.run_instances(ImageId='ami-073b290713dd81430',InstanceType='t2.micro',KeyName='java_proj_1',MinCount=add,MaxCount=add,TagSpecifications=[{
                                 'ResourceType': 'instance','Tags': [
                                 {
-                                        'Key': 'Type',
-                                        'Value': 'Autoscale'
+                                        'Key': 'tier',
+                                        'Value': 'app'
                                 },
                                 {
                                         'Key': 'Name',
-                                        'Value': 'AppTier'
+                                        'Value': 'app-tier'
                                 },
                                 ]
                         },

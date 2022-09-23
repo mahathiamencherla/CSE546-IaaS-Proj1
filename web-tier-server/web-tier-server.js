@@ -71,7 +71,7 @@ app.post('/api/image', async(req, res) => {
     const message = {
         DelaySeconds: 0,
         MessageBody: JSON.stringify(new Message(id, inputBucketKey)),
-        QueueUrl: "https://sqs.us-east-1.amazonaws.com/983873151114/RequestQueue"
+        QueueUrl: "https://sqs.us-east-1.amazonaws.com/246156685396/RequestQueue"
     };
 
     await SQS.sendMessage(message).promise()
