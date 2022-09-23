@@ -17,7 +17,7 @@ requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/246156685396/RequestQueu
 requestQueue_attributes = responseQueue.get_queue_attributes(QueueUrl=requestQueue_url, AttributeNames=['ApproximateNumberOfMessages'])
 noOfMessages = int(requestQueue_attributes['Attributes']['ApproximateNumberOfMessages'])
 # Fetch ids of the running instances
-runningEc2 = ec2.describe_instances(Filters=[{'Name': 'instance-state-name', 'Values': ['running']},{'Name': 'tag:tier', 'Values': ['app']}])
+runningEc2 = ec2.describe_instances(Filters=[{'Name': 'instance-state-name', 'Values': ['running','pending']},{'Name': 'tag:tier', 'Values': ['app']}])
 runningEc2Ids = []
 # List of IDs of running instances
 if runningEc2['Reservations']:
