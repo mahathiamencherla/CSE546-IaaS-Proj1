@@ -25,7 +25,7 @@ cw_client = boto3.client('cloudwatch', region_name="us-east-1",
                        aws_secret_access_key=os.environ.get('AWS_SECRET'))
 
 request_queue_url = 'https://sqs.us-east-1.amazonaws.com/983873151114/RequestQueue'
-response_queue_url = 'https://sqs.us-east-1.amazonaws.com/983873151114/ResponseQueue'
+response_queue_url = 'https://sqs.us-east-1.amazonaws.com/246156685396/ResponseQueue'
 
 def read_queue():
 
@@ -64,11 +64,11 @@ class Message():
 
 def process_image(message):
     print(message)
-    s3.download_file('cloud-proj-input', message['name'], 'downloads/'+message['name'])
+    s3.download_file('input-bucket-images-cc', message['name'], 'downloads/'+message['name'])
     classification = image_classification.classify('downloads/'+message['name'])
 
     s3.put_object(
-        Bucket = 'cloud-proj-output',
+        Bucket = 'output-bucket-images-cc',
         Key = message['name'].split('.')[0],
         Body = str({
             message['name'].split('.')[0]: classification
@@ -77,7 +77,7 @@ def process_image(message):
 
     message = Message(message['id'], message['name'], classification)
     sqs.send_message(
-        QueueUrl='https://sqs.us-east-1.amazonaws.com/983873151114/ResponseQueue',
+        QueueUrl='https://sqs.us-east-1.amazonaws.com/246156685396/ResponseQueue',
         MessageBody=str(json.dumps(message.__dict__))
     )
     print(message.image + " processed. Classification - " + classification)

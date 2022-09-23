@@ -34,7 +34,7 @@ const SQS = new AWS.SQS({apiVersion: '2012-11-05',accessKeyId: process.env.AWS_K
     secretAccessKey: process.env.AWS_SECRET})
     
 const sqsApp = Consumer.create({
-    queueUrl: 'https://sqs.us-east-1.amazonaws.com/983873151114/ResponseQueue',
+    queueUrl: 'https://sqs.us-east-1.amazonaws.com/246156685396/ResponseQueue',
     handleMessage: async (data) => {
         var message = JSON.parse(data.Body)
         console.log("Message received: " + message.id)
@@ -59,7 +59,7 @@ app.post('/api/image', async(req, res) => {
     //upload image to S3
     let inputBucketKey = Date.now().toString() + req.files.myfile.name;
     const params = {
-        Bucket: "cloud-proj-input",
+        Bucket: "input-bucket-images-cc",
         Key: inputBucketKey,
         Body: req.files.myfile.data
     }

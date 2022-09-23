@@ -10,11 +10,11 @@ TODO - Add pem key and AWS creds and specify location here
 
 ## AWS Resources
 - S3 Buckets
-  - Input - cloud-proj-input
-  - Output - cloud-proj-output
+  - Input - input-bucket-images-cc
+  - Output - output-bucket-images-cc
 - SQS Queues
-  - RequestQueue - https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue
-  - ResponseQueue - https://sqs.us-east-1.amazonaws.com/983873151114/ResponseQueue
+  - RequestQueue - https://sqs.us-east-1.amazonaws.com/246156685396/RequestQueue
+  - ResponseQueue - https://sqs.us-east-1.amazonaws.com/246156685396/ResponseQueue
 - Web Tier
   - URL - TODO
   - EIP - TODO
