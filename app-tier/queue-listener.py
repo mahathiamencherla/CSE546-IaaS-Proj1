@@ -64,11 +64,11 @@ class Message():
 
 def process_image(message):
     print(message)
-    s3.download_file('iaas-proj-input', message['name'], 'downloads/'+message['name'])
+    s3.download_file('cloud-proj-input', message['name'], 'downloads/'+message['name'])
     classification = image_classification.classify('downloads/'+message['name'])
 
     s3.put_object(
-        Bucket = 'iaas-proj-output',
+        Bucket = 'cloud-proj-output',
         Key = message['name'].split('.')[0],
         Body = str({
             message['name'].split('.')[0]: classification
