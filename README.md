@@ -10,8 +10,8 @@ TODO - Add pem key and AWS creds and specify location here
 
 ## AWS Resources
 - S3 Buckets
-  - Input - iaas-proj-input
-  - Output - iaas-proj-output
+  - Input - cloud-proj-input
+  - Output - cloud-proj-output
 - SQS Queues
   - RequestQueue - https://sqs.us-east-1.amazonaws.com/676148463056/RequestQueue
   - ResponseQueue - https://sqs.us-east-1.amazonaws.com/983873151114/ResponseQueue
