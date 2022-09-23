@@ -12,8 +12,7 @@ ec2 = boto3.client('ec2', region_name="us-east-1",
         aws_access_key_id=os.environ.get('AWS_KEY'),
                        aws_secret_access_key=os.environ.get('AWS_SECRET'))
 # Get the queue URL
-# old queue: requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/246156685396/RequestQueue'
-requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/983873151114/RequestQueue'
+requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/246156685396/RequestQueue'
 # Fetch the ApproximateNumberOfMessages from the queue
 requestQueue_attributes = responseQueue.get_queue_attributes(QueueUrl=requestQueue_url, AttributeNames=['ApproximateNumberOfMessages'])
 noOfMessages = int(requestQueue_attributes['Attributes']['ApproximateNumberOfMessages'])
@@ -31,6 +30,10 @@ requiredEc2 = math.ceil(noOfMessages/target)
 print("required = " + str(requiredEc2))
 noOfRunningEc2 = len(runningEc2Ids)
 print("running = " + str(noOfRunningEc2))
+
+user_data = '''#!/bin/bash
+pm2 resurrect'''
+
 # Autoscaling
 if noOfRunningEc2 == requiredEc2:
         print("Autoscaling not required!")
@@ -41,7 +44,7 @@ elif noOfRunningEc2>requiredEc2:
 # Scaling-out
 else:
         add = requiredEc2 - noOfRunningEc2
-        response=ec2.run_instances(ImageId='ami-073b290713dd81430',InstanceType='t2.micro',KeyName='java_proj_1',MinCount=add,MaxCount=add,TagSpecifications=[{
+        response=ec2.run_instances(ImageId='ami-02a102f25a59e9a46',InstanceType='t2.micro',KeyName='cloud-proj',MinCount=add,MaxCount=add,UserData=user_data,TagSpecifications=[{
                                 'ResourceType': 'instance','Tags': [
                                 {
                                         'Key': 'tier',
