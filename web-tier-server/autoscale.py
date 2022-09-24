@@ -15,6 +15,8 @@ ec2 = boto3.client('ec2', region_name="us-east-1",
 zeroInstances = False
 zero_time = time.time()
 def run():
+        global zeroInstances
+        global zero_time
         # Get the queue URL
         requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/246156685396/RequestQueue'
         # Fetch the ApproximateNumberOfMessages from the queue
@@ -37,7 +39,7 @@ def run():
         if requiredEc2 == 0 and noOfRunningEc2 > 0:
                 if zeroInstances:
                         mins = (time.time() - zero_time) // 60
-                        if mins < 2:
+                        if mins < 5:
                               requiredEc2 = 1
                         print("Minutes elapsed since zero instances required: " + str(mins))
                 else:
@@ -45,8 +47,8 @@ def run():
                         zeroInstances = True
                         requiredEc2 = 1
                         print("First time zero instances required")
-                print("New required count: " + requiredEc2)
-        if zeroInstances and requiredEc2 > 0:
+                print("New required count: " + str(requiredEc2))
+        elif zeroInstances and requiredEc2 > 0:
                 zeroInstances = False
         user_data = '''#!/bin/bash
         sudo -u ubuntu -i <<'EOF'
