@@ -26,7 +26,7 @@ if runningEc2['Reservations']:
 print(noOfMessages,runningEc2Ids)
 # Total number of instance required for the messages in the queue
 target = 50
-requiredEc2 = math.ceil(noOfMessages/target)
+requiredEc2 = min(math.ceil(noOfMessages/target), 20)
 print("required = " + str(requiredEc2))
 noOfRunningEc2 = len(runningEc2Ids)
 print("running = " + str(noOfRunningEc2))

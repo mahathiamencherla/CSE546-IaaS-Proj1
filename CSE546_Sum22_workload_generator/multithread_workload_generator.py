@@ -31,6 +31,13 @@ def send_one_request(image_path):
         image_msg = image_path.split('/')[1] + ' uploaded!'
         msg = image_msg + '\n' + 'Classification result: ' + r.text
         print(msg)
+        
+def time_convert(sec):
+  mins = sec // 60
+  sec = sec % 60
+  hours = mins // 60
+  mins = mins % 60
+  print("Time Lapsed = {0}:{1}:{2}".format(int(hours),int(mins),sec))
 
 start_time = time.time()
 
@@ -46,3 +53,7 @@ for i, name in enumerate(os.listdir(image_folder)):
 
 with ThreadPoolExecutor(max_workers = num_max_workers) as executor:
       executor.map(send_one_request, image_path_list)
+
+end_time = time.time()
+time_lapsed = end_time - start_time
+time_convert(time_lapsed)
