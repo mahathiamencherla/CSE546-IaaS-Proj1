@@ -27,6 +27,8 @@ print(noOfMessages,runningEc2Ids)
 # Total number of instance required for the messages in the queue
 target = 50
 requiredEc2 = min(math.ceil(noOfMessages/target), 20)
+if requiredEc2 == 0:
+        requiredEc2 = 1
 print("required = " + str(requiredEc2))
 noOfRunningEc2 = len(runningEc2Ids)
 print("running = " + str(noOfRunningEc2))
