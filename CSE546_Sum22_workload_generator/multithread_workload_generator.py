@@ -43,7 +43,7 @@ start_time = time.time()
 
 num_request = args.num_request
 image_folder = args.image_folder
-num_max_workers = 100
+num_max_workers = args.num_request
 image_path_list = []
 for i, name in enumerate(os.listdir(image_folder)):
     if i == num_request:
