@@ -39,7 +39,7 @@ def run():
         if requiredEc2 == 0 and noOfRunningEc2 > 0:
                 if zeroInstances:
                         mins = (time.time() - zero_time) // 60
-                        if mins < 5:
+                        if mins < 3:
                               requiredEc2 = 1
                         print("Minutes elapsed since zero instances required: " + str(mins))
                 else:
