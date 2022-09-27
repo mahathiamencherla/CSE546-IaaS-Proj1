@@ -31,7 +31,7 @@ def run():
                         runningEc2Ids.append(instance['InstanceId'])
         print(noOfMessages,runningEc2Ids)
         # Total number of instance required for the messages in the queue
-        target = 10
+        target = 20
         requiredEc2 = min(math.ceil(noOfMessages/target), 20)
         print("required = " + str(requiredEc2))
         noOfRunningEc2 = len(runningEc2Ids)
