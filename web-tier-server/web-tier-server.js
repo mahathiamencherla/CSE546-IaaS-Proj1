@@ -34,7 +34,7 @@ const SQS = new AWS.SQS({apiVersion: '2012-11-05',accessKeyId: process.env.AWS_K
     secretAccessKey: process.env.AWS_SECRET})
     
 const sqsApp = Consumer.create({
-    queueUrl: 'https://sqs.us-east-1.amazonaws.com/246156685396/ResponseQueue',
+    queueUrl: 'https://sqs.us-east-1.amazonaws.com/158146116237/ResponseQueue',
     handleMessage: async (data) => {
         var message = JSON.parse(data.Body)
         console.log("Message received: " + message.id)
@@ -71,7 +71,7 @@ app.post('/api/image', async(req, res) => {
     const message = {
         DelaySeconds: 0,
         MessageBody: JSON.stringify(new Message(id, inputBucketKey)),
-        QueueUrl: "https://sqs.us-east-1.amazonaws.com/246156685396/RequestQueue"
+        QueueUrl: 'https://sqs.us-east-1.amazonaws.com/158146116237/RequestQueue'
     };
 
     await SQS.sendMessage(message).promise()
