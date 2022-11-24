@@ -77,7 +77,7 @@ def process_image(message):
 
     message = Message(message['id'], message['name'], classification)
     sqs.send_message(
-        QueueUrl='https://sqs.us-east-1.amazonaws.com/246156685396/ResponseQueue',
+        QueueUrl='https://sqs.us-east-1.amazonaws.com/158146116237/ResponseQueue',
         MessageBody=str(json.dumps(message.__dict__))
     )
     print(message.image + " processed. Classification - " + classification)
