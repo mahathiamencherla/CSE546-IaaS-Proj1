@@ -64,11 +64,11 @@ class Message():
 
 def process_image(message):
     print(message)
-    s3.download_file('input-bucket-images-cc', message['name'], 'downloads/'+message['name'])
+    s3.download_file('input-bucket-images-proj3', message['name'], 'downloads/'+message['name'])
     classification = image_classification.classify('downloads/'+message['name'])
 
     s3.put_object(
-        Bucket = 'output-bucket-images-cc',
+        Bucket = 'output-bucket-images-proj3',
         Key = message['name'].split('.')[0],
         Body = str({
             message['name'].split('.')[0]: classification
