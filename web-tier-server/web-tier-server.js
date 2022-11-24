@@ -59,7 +59,7 @@ app.post('/api/image', async(req, res) => {
     //upload image to S3
     let inputBucketKey = Date.now().toString() + req.files.myfile.name;
     const params = {
-        Bucket: "input-bucket-images-cc",
+        Bucket: "input-bucket-images-proj3",
         Key: inputBucketKey,
         Body: req.files.myfile.data
     }
