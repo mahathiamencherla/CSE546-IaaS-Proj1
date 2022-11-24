@@ -18,7 +18,7 @@ def run():
         global zeroInstances
         global zero_time
         # Get the queue URL
-        requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/246156685396/RequestQueue'
+        requestQueue_url = 'https://sqs.us-east-1.amazonaws.com/158146116237/RequestQueue'
         # Fetch the ApproximateNumberOfMessages from the queue
         requestQueue_attributes = responseQueue.get_queue_attributes(QueueUrl=requestQueue_url, AttributeNames=['ApproximateNumberOfMessages'])
         noOfMessages = int(requestQueue_attributes['Attributes']['ApproximateNumberOfMessages'])
