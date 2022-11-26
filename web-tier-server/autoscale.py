@@ -65,7 +65,7 @@ def run():
         # Scaling-out
         else:
                 add = requiredEc2 - noOfRunningEc2
-                response=ec2.run_instances(ImageId='ami-0bf71a62be0455cf0',InstanceType='t2.micro',KeyName='test',MinCount=add,MaxCount=add,UserData=user_data,TagSpecifications=[{
+                response=ec2.run_instances(ImageId='ami-007a2ee2e2b3f8172',InstanceType='t2.micro',KeyName='test',MinCount=add,MaxCount=add,UserData=user_data,TagSpecifications=[{
                                         'ResourceType': 'instance','Tags': [
                                         {
                                                 'Key': 'tier',
