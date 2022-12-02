@@ -27,11 +27,12 @@ def run():
         runningEc2Ids = []
         # List of IDs of running instances
         if runningEc2['Reservations']:
-                for instance in runningEc2['Reservations'][0]['Instances']:
-                        runningEc2Ids.append(instance['InstanceId'])
+                for res in runningEc2['Reservations']:
+                	for instance in res['Instances']:
+                        	runningEc2Ids.append(instance['InstanceId'])
         print(noOfMessages,runningEc2Ids)
         # Total number of instance required for the messages in the queue
-        target = 20
+        target = 10
         requiredEc2 = min(math.ceil(noOfMessages/target), 20)
         print("required = " + str(requiredEc2))
         noOfRunningEc2 = len(runningEc2Ids)
@@ -39,7 +40,7 @@ def run():
         if requiredEc2 == 0 and noOfRunningEc2 > 0:
                 if zeroInstances:
                         mins = (time.time() - zero_time) // 60
-                        if mins < 3:
+                        if mins < 1:
                               requiredEc2 = 1
                         print("Minutes elapsed since zero instances required: " + str(mins))
                 else:
